@@ -21,6 +21,11 @@ User = get_user_model()
 
 
 class PostViewSet(viewsets.ViewSet):
+    """
+    Вьюсет осуществляет функционал:
+    .../mark_read POST для пометки поста в ленте как прочитанного
+    """
+
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
@@ -36,10 +41,22 @@ class PostViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         post.read_by_users.add(user)
         post.save()
-        return Response({"detail": "Post marked as read."}, status=status.HTTP_200_OK)
+        return Response(
+            {"detail": "Post marked as read."},
+            status=status.HTTP_200_OK,
+        )
 
 
 class FollowViewSet(viewsets.ModelViewSet):
+    """
+    Вьюсет осуществляет функционал:
+    .../subscribe POST подписка на пользователя
+    .../subscribe DELETE удаление пользователя из подписок
+    .../subscriptions GET просмотр на кого подписан пользователь
+    .../newsfeed GET просмотр ленты новостей(подписок)
+
+    """
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = CustomPagination
@@ -87,8 +104,8 @@ class FollowViewSet(viewsets.ModelViewSet):
     )
     def newsfeed(self, request):
         user = request.user
-        subscribed_users_subquery = User.objects.filter(following__user=user).values(
-            "id"
+        subscribed_users_subquery = (
+            User.objects.filter(following__user=user).values("id")
         )
         queryset = Post.objects.filter(author_id__in=subscribed_users_subquery)
 

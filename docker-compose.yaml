@@ -12,3 +12,65 @@ services:
       - ./data:/var/lib/pgsql/data
     env_file:
       - .env
+
+  web:
+    container_name: Web-app
+    build: ./code
+    command: bash -c "python manage.py makemigrations &&
+      python manage.py migrate && python manage.py collectstatic --noinput &&
+      gunicorn mysite.wsgi:application --bind 0.0.0.0:8001"
+    volumes:
+      - ./code:/code
+    depends_on:
+      - db
+    restart: unless-stopped
+    env_file:
+      - .env
+    links:
+      - "db:db"
+    expose:
+      - "8001"
+
+  redis:
+    image: redis:7.0.5-alpine
+    hostname: redis
+    ports:
+      - "6379:6379"
+    depends_on:
+      - db
+      - web
+    restart: unless-stopped
+
+  nginx:
+    container_name: NGINX
+    build: ./nginx
+    volumes:
+      - ./code/static:/mysite/static
+      - ./code/media:/mysite/media
+    ports:
+      - "80:80"
+    links:
+      - "web:web"
+    depends_on:
+      - db
+      - web
+      - worker
+      - redis
+    restart: unless-stopped
+
+
+  worker:
+    build: ./code
+    hostname: worker
+    entrypoint: celery
+    command: -A mysite  worker -B -l INFO
+
+    volumes:
+      - ./code:/code
+    links:
+      - redis
+    depends_on:
+      - redis
+      - db
+      - web
+    restart: unless-stopped

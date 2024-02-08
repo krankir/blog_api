@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
-from rest_framework.validators import UniqueTogetherValidator
 
 from blog.models import Post
 from users.models import Follow
@@ -11,16 +10,27 @@ User = get_user_model()
 
 
 class PostReadMarkSerializer(serializers.ModelSerializer):
+    """Сериализаттор для отметки сообщения как прочитанного."""
+
     class Meta:
         model = Post
         fields = ("id",)
 
 
+class CreatePostSerializer(serializers.ModelSerializer):
+    author = serializers.IntegerField()
+
+    class Meta:
+        model = Post
+        fields = ("title", "text", "author")
+
+
 class PostSerializer(serializers.ModelSerializer):
+    """Сериализатор поста."""
+
     class Meta:
         model = Post
         fields = (
-            "id",
             "title",
             "author",
             "pub_date",
@@ -28,6 +38,8 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class NewsFeedSerializer(serializers.ModelSerializer):
+    """Сериализатор для ленты новостей."""
+
     class Meta:
         model = Post
         fields = (
@@ -39,21 +51,11 @@ class NewsFeedSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор для подписки на пользователя."""
+
     class Meta:
         model = User
         fields = ("username",)
-
-
-class FollowSubscriptionsSerializer(serializers.ModelSerializer):
-    subscriptions = SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = ("subscriptions",)
-
-    def get_subscriptions(self, obj):
-        authors = obj.following.all()
-        return authors
 
 
 class CustomUserSerializer(UserSerializer):
@@ -80,7 +82,7 @@ class CustomUserSerializer(UserSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    """Сериализатор для  подписки"""
+    """Сериализатор для подписки"""
 
     class Meta:
         model = User

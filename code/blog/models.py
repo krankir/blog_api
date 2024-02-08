@@ -4,19 +4,6 @@ from django.db import models
 User = get_user_model()
 
 
-# class Blog(models.Model):
-#     owner = models.OneToOneField(
-#         User,
-#         on_delete=models.CASCADE,
-#         verbose_name="Владелец блога",
-#     )
-#     posts = models.ForeignKey(
-#         "Post",
-#         on_delete=models.CASCADE,
-#     )
-#
-
-
 class Post(models.Model):
     title = models.CharField(
         "заголовок",
