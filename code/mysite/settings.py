@@ -69,11 +69,11 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-if 'test' in sys.argv:
+if "test" in sys.argv:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ':memory:',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
         }
     }
 else:
@@ -83,7 +83,7 @@ else:
             "NAME": os.getenv("DB_NAME", default="postgres"),
             "USER": os.getenv("POSTGRES_USER", default="postgres"),
             "PASSWORD": os.getenv("POSTGRES_PASSWORD", default="postgres"),
-            'HOST': os.getenv('DB_HOST', default='db'),
+            "HOST": os.getenv("DB_HOST", default="db"),
             # "HOST": "localhost",
             "PORT": os.getenv("DB_PORT", default="5432"),
         }
@@ -136,22 +136,31 @@ AUTH_USER_MODEL = "users.User"
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 5,
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.AnonRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "user": "1000/day",
+        "anon": "100/day",
+    },
 }
+
 
 # celery
 CELERY_BROKER_URL = "redis://redis:6379/0"
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1"]
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static/'
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "static/"
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media/'
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media/"
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
