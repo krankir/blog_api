@@ -1,6 +1,7 @@
 # blog_api
 ## Описание
-REST API для работы с блогом
+REST API для работы с блогом. Реализован функционал для пользователей подписавшихся на рассылку на почту прилетает подборка из 5 последних постов ленты.
+Установлен лимит на количество запросов в день. Для авторизованных 1000 в день, а для анонимных пользователей 100 запросов в день.
 
 ### Технологии
 - Python
@@ -10,7 +11,7 @@ REST API для работы с блогом
 - Celery
 - Redis
 
-### Шаблон наполнения .env файла
+### Создать в корне проекта файл .env и заполнить тестовыми данными.
 - работаем с postgresql
 ```
 DB_ENGINE=django.db.backends.postgresql 
@@ -41,10 +42,6 @@ DB_PORT=5432
 ```
 docker-compose up -d --build 
 ```
-- Выполнить migrate
-```
-docker-compose exec web python manage.py migrate
-```
 - Создайте пользователя
 ```
 docker-compose exec web python manage.py createsuperuser
@@ -53,10 +50,8 @@ docker-compose exec web python manage.py createsuperuser
 ```
 docker-compose exec web python manage.py changepassword admin
 ```
-- Сформируйте STATIC файлы:
-```
-docker-compose exec web python manage.py collectstatic --no-input
-```
+
+#### Админ понель будеть доступна по адресу: [127.0.0.1/admin](http://127.0.0.1/admin)
 
 # Реализованные API endpoints:
 - **Подписка на пользователя.**
